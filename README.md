@@ -25,14 +25,14 @@ git clone [https://github.com/KULLANICI_ADIN/python-butce-app.git](https://githu
 cd python-butce-app
 ```
 
-###2. Gerekli Kütüphaneyi Yükleyin
+### 2. Gerekli Kütüphaneyi Yükleyin
 Proje Flask kütüphanesini kullanır. Terminalde şu komutu çalıştırın:
 
 ```bash
 pip install flask
 ```
 
-###3. Uygulamayı Çalıştırın
+### 3. Uygulamayı Çalıştırın
 Kurulum tamamlandıktan sonra uygulamayı başlatmak için:
 
 ```bash
@@ -43,7 +43,7 @@ Terminalde şuna benzer bir çıktı göreceksiniz:
 
 Running on [http://127.0.0.1:5000](http://127.0.0.1:5000)
 
-###4. Tarayıcıda Açın
+### 4. Tarayıcıda Açın
 Tarayıcınızın adres çubuğuna şu adresi yazın: http://127.0.0.1:5000
 
 📂 Proje Yapısı
