@@ -2,6 +2,11 @@ from flask import Flask, render_template, request, jsonify
 import json
 import os
 from datetime import datetime
+from openpyxl import Workbook
+from openpyxl.styles import Font, PatternFill, Alignment
+from openpyxl.utils import get_column_letter
+from flask import send_file
+import io
 
 app = Flask(__name__)
 
@@ -73,6 +78,74 @@ def update_transaction(id):
     
     save_transactions(transactions)
     return jsonify({'success': True})
+
+
+from openpyxl import Workbook
+from openpyxl.styles import Font, PatternFill, Alignment
+from openpyxl.utils import get_column_letter
+from flask import send_file
+import io
+
+@app.route('/api/transactions/export/excel')
+def export_excel():
+    transactions = load_transactions()
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Bütçe Kayıtları"
+
+    headers = [
+        'ID',
+        'Tür',
+        'Tutar (₺)',
+        'Kategori',
+        'Açıklama',
+        'Tarih'
+    ]
+
+    header_fill = PatternFill("solid", fgColor="6D28D9")
+    header_font = Font(color="FFFFFF", bold=True)
+    header_align = Alignment(horizontal="center")
+
+    ws.append(headers)
+
+    for col in range(1, len(headers) + 1):
+        cell = ws.cell(row=1, column=col)
+        cell.fill = header_fill
+        cell.font = header_font
+        cell.alignment = header_align
+        ws.column_dimensions[get_column_letter(col)].width = 20
+
+    for t in transactions:
+        ws.append([
+            t['id'],
+            'Gelir' if t['type'] == 'income' else 'Gider',
+            t['amount'],
+            t['category'],
+            t['description'],
+            t['date']
+        ])
+
+    # Gelir / gider renklendirme
+    for row in ws.iter_rows(min_row=2, min_col=3, max_col=3):
+        for cell in row:
+            tur = ws.cell(row=cell.row, column=2).value
+            cell.font = Font(
+                color="16A34A" if tur == 'Gelir' else "DC2626",
+                bold=True
+            )
+
+    file_stream = io.BytesIO()
+    wb.save(file_stream)
+    file_stream.seek(0)
+
+    return send_file(
+        file_stream,
+        as_attachment=True,
+        download_name="butce_raporu.xlsx",
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

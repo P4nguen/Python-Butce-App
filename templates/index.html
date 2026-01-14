@@ -1,473 +1,640 @@
 <!DOCTYPE html>
 <html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Finansal Asistanım - Python Flask</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
         }
-        .fade-in {
-            animation: fadeIn 0.3s ease-out;
+        to {
+          opacity: 1;
+          transform: translateY(0);
         }
+      }
+      .fade-in {
+        animation: fadeIn 0.3s ease-out;
+      }
     </style>
-</head>
-<body class="bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 min-h-screen">
+  </head>
+  <body
+    class="bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 min-h-screen"
+  >
     <div class="max-w-7xl mx-auto p-4">
-        <div class="text-center mb-8 pt-6">
-            <h1 class="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
-                Finansal Asistanım 🐍
-            </h1>
-            <p class="text-gray-600">Python Flask ile Bütçe Takibi</p>
+      <div class="text-center mb-8 pt-6">
+        <h1
+          class="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2"
+        >
+          Finansal Asistanım 🐍
+        </h1>
+        <p class="text-gray-600">Python Flask ile Bütçe Takibi</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div
+          class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-green-500 transform hover:scale-105 transition-transform"
+        >
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-gray-500 text-sm mb-1">Toplam Gelir</p>
+              <p class="text-3xl font-bold text-green-600" id="total-income">
+                ₺0.00
+              </p>
+            </div>
+            <span class="text-5xl">📈</span>
+          </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-green-500 transform hover:scale-105 transition-transform">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-500 text-sm mb-1">Toplam Gelir</p>
-                        <p class="text-3xl font-bold text-green-600" id="total-income">₺0.00</p>
-                    </div>
-                    <span class="text-5xl">📈</span>
-                </div>
+        <div
+          class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-red-500 transform hover:scale-105 transition-transform"
+        >
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-gray-500 text-sm mb-1">Toplam Gider</p>
+              <p class="text-3xl font-bold text-red-600" id="total-expense">
+                ₺0.00
+              </p>
             </div>
-
-            <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-red-500 transform hover:scale-105 transition-transform">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-500 text-sm mb-1">Toplam Gider</p>
-                        <p class="text-3xl font-bold text-red-600" id="total-expense">₺0.00</p>
-                    </div>
-                    <span class="text-5xl">📉</span>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-blue-500 transform hover:scale-105 transition-transform">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-500 text-sm mb-1">Net Bakiye</p>
-                        <p class="text-3xl font-bold text-blue-600" id="balance">₺0.00</p>
-                    </div>
-                    <span class="text-5xl">💰</span>
-                </div>
-            </div>
+            <span class="text-5xl">📉</span>
+          </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col">
-                <h3 class="text-xl font-bold mb-4 text-gray-800">Harcama Dağılımı</h3>
-                <div class="relative h-64 w-full">
-                    <canvas id="pieChart"></canvas>
-                </div>
+        <div
+          class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-blue-500 transform hover:scale-105 transition-transform"
+        >
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-gray-500 text-sm mb-1">Net Bakiye</p>
+              <p class="text-3xl font-bold text-blue-600" id="balance">₺0.00</p>
             </div>
+            <span class="text-5xl">💰</span>
+          </div>
+        </div>
+      </div>
 
-            <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col">
-                <h3 class="text-xl font-bold mb-4 text-gray-800">Aylık Analiz</h3>
-                <div class="relative h-64 w-full">
-                    <canvas id="barChart"></canvas>
-                </div>
-            </div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col">
+          <h3 class="text-xl font-bold mb-4 text-gray-800">Harcama Dağılımı</h3>
+          <div class="relative h-64 w-full">
+            <canvas id="pieChart"></canvas>
+          </div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
-            <div class="flex flex-wrap gap-4 items-center justify-between">
-                <div class="flex flex-wrap gap-3">
-                    <select id="filter-type" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none">
-                        <option value="all">Tümü</option>
-                        <option value="income">Gelirler</option>
-                        <option value="expense">Giderler</option>
-                    </select>
-
-                    <select id="filter-period" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none">
-                        <option value="all">Tüm Zamanlar</option>
-                        <option value="today">Bugün</option>
-                        <option value="week">Son 7 Gün</option>
-                        <option value="month">Son Ay</option>
-                        <option value="year">Son Yıl</option>
-                    </select>
-                </div>
-
-                <button onclick="showAddModal()" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2 rounded-lg flex items-center gap-2 hover:from-purple-600 hover:to-pink-600 transition-all shadow-md">
-                    <span class="text-xl">➕</span>
-                    Yeni İşlem
-                </button>
-            </div>
+        <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col">
+          <h3 class="text-xl font-bold mb-4 text-gray-800">Aylık Analiz</h3>
+          <div class="relative h-64 w-full">
+            <canvas id="barChart"></canvas>
+          </div>
         </div>
+      </div>
 
-        <div class="bg-white rounded-2xl shadow-lg p-6">
-            <h3 class="text-xl font-bold mb-4 text-gray-800">İşlem Geçmişi</h3>
-            <div id="transactions-list" class="space-y-3"></div>
+      <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+        <div class="flex flex-wrap gap-4 items-center justify-between">
+          <div class="flex flex-wrap gap-3">
+            <select
+              id="filter-type"
+              class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
+            >
+              <option value="all">Tümü</option>
+              <option value="income">Gelirler</option>
+              <option value="expense">Giderler</option>
+            </select>
+
+            <select
+              id="filter-period"
+              class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
+            >
+              <option value="all">Tüm Zamanlar</option>
+              <option value="today">Bugün</option>
+              <option value="week">Son 7 Gün</option>
+              <option value="month">Son Ay</option>
+              <option value="year">Son Yıl</option>
+            </select>
+          </div>
+
+          <button
+            onclick="showAddModal()"
+            class="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2 rounded-lg flex items-center gap-2 hover:from-purple-600 hover:to-pink-600 transition-all shadow-md"
+          >
+            <span class="text-xl">➕</span>
+            Yeni İşlem
+          </button>
+
+          <button
+            onclick="window.location.href='/api/transactions/export/excel'"
+            class="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-5 py-2 rounded-lg shadow-md"
+          >
+            📊 Excel Raporu
+          </button>
         </div>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-lg p-6">
+        <h3 class="text-xl font-bold mb-4 text-gray-800">İşlem Geçmişi</h3>
+        <div id="transactions-list" class="space-y-3"></div>
+      </div>
     </div>
 
-    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 fade-in">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-bold text-gray-800" id="modal-title">Yeni İşlem Ekle</h3>
-                <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700 text-2xl">✖️</button>
-            </div>
-
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Tür</label>
-                    <div class="grid grid-cols-2 gap-3">
-                        <button onclick="selectType('income')" id="btn-income" class="py-3 rounded-lg font-medium transition-all bg-gray-100 text-gray-600 hover:bg-gray-200">
-                            💰 Gelir
-                        </button>
-                        <button onclick="selectType('expense')" id="btn-expense" class="py-3 rounded-lg font-medium transition-all bg-red-500 text-white shadow-md">
-                            💸 Gider
-                        </button>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Tutar (₺)</label>
-                    <input type="number" step="0.01" id="input-amount" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none" placeholder="0.00">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Kategori</label>
-                    <select id="input-category" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none">
-                        <option value="">Kategori Seçin</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Açıklama</label>
-                    <input type="text" id="input-description" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none" placeholder="Açıklama ekleyin...">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Tarih</label>
-                    <input type="date" id="input-date" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none">
-                </div>
-
-                <button onclick="saveTransaction()" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 rounded-lg font-medium hover:from-purple-600 hover:to-pink-600 transition-all shadow-md flex items-center justify-center gap-2">
-                    <span class="text-xl">💾</span>
-                    <span id="save-btn-text">Kaydet</span>
-                </button>
-            </div>
+    <div
+      id="modal"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden"
+    >
+      <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 fade-in">
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="text-2xl font-bold text-gray-800" id="modal-title">
+            Yeni İşlem Ekle
+          </h3>
+          <button
+            onclick="closeModal()"
+            class="text-gray-500 hover:text-gray-700 text-2xl"
+          >
+            ✖️
+          </button>
         </div>
+
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Tür</label
+            >
+            <div class="grid grid-cols-2 gap-3">
+              <button
+                onclick="selectType('income')"
+                id="btn-income"
+                class="py-3 rounded-lg font-medium transition-all bg-gray-100 text-gray-600 hover:bg-gray-200"
+              >
+                💰 Gelir
+              </button>
+              <button
+                onclick="selectType('expense')"
+                id="btn-expense"
+                class="py-3 rounded-lg font-medium transition-all bg-red-500 text-white shadow-md"
+              >
+                💸 Gider
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Tutar (₺)</label
+            >
+            <input
+              type="number"
+              step="0.01"
+              id="input-amount"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
+              placeholder="0.00"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Kategori</label
+            >
+            <select
+              id="input-category"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
+            >
+              <option value="">Kategori Seçin</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Açıklama</label
+            >
+            <input
+              type="text"
+              id="input-description"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
+              placeholder="Açıklama ekleyin..."
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Tarih</label
+            >
+            <input
+              type="date"
+              id="input-date"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
+            />
+          </div>
+
+          <button
+            onclick="saveTransaction()"
+            class="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 rounded-lg font-medium hover:from-purple-600 hover:to-pink-600 transition-all shadow-md flex items-center justify-center gap-2"
+          >
+            <span class="text-xl">💾</span>
+            <span id="save-btn-text">Kaydet</span>
+          </button>
+        </div>
+      </div>
     </div>
 
     <script>
-        let transactions = [];
-        let editingId = null;
-        let currentType = 'expense';
-        let pieChart = null;
-        let barChart = null;
+      let transactions = [];
+      let editingId = null;
+      let currentType = "expense";
+      let pieChart = null;
+      let barChart = null;
 
-        const categories = {
-            expense: ['Yiyecek & İçecek', 'Ulaşım', 'Faturalar', 'Eğlence', 'Alışveriş', 'Sağlık', 'Eğitim', 'Diğer'],
-            income: ['Maaş', 'Yatırım', 'Freelance', 'Hediye', 'Diğer']
+      const categories = {
+        expense: [
+          "Yiyecek & İçecek",
+          "Ulaşım",
+          "Faturalar",
+          "Eğlence",
+          "Alışveriş",
+          "Sağlık",
+          "Eğitim",
+          "Diğer",
+        ],
+        income: ["Maaş", "Yatırım", "Freelance", "Hediye", "Diğer"],
+      };
+
+      const categoryColors = {
+        "Yiyecek & İçecek": "#FF6B6B",
+        Ulaşım: "#4ECDC4",
+        Faturalar: "#45B7D1",
+        Eğlence: "#FFA07A",
+        Alışveriş: "#98D8C8",
+        Sağlık: "#FF89B5",
+        Eğitim: "#95E1D3",
+        Diğer: "#B8B8D1",
+        Maaş: "#6BCF7F",
+        Yatırım: "#4A90E2",
+        Freelance: "#9B59B6",
+        Hediye: "#F39C12",
+      };
+
+      // Load transactions
+      async function loadTransactions() {
+        const response = await fetch("/api/transactions");
+        transactions = await response.json();
+        updateUI();
+      }
+
+      // Add/Update transaction
+      async function saveTransaction() {
+        const amount = document.getElementById("input-amount").value;
+        const category = document.getElementById("input-category").value;
+        const description = document.getElementById("input-description").value;
+        const date = document.getElementById("input-date").value;
+
+        if (!amount || !category) {
+          alert("Lütfen tüm alanları doldurun");
+          return;
+        }
+
+        const data = {
+          type: currentType,
+          amount: parseFloat(amount),
+          category,
+          description,
+          date,
         };
 
-        const categoryColors = {
-            'Yiyecek & İçecek': '#FF6B6B',
-            'Ulaşım': '#4ECDC4',
-            'Faturalar': '#45B7D1',
-            'Eğlence': '#FFA07A',
-            'Alışveriş': '#98D8C8',
-            'Sağlık': '#FF89B5',
-            'Eğitim': '#95E1D3',
-            'Diğer': '#B8B8D1',
-            'Maaş': '#6BCF7F',
-            'Yatırım': '#4A90E2',
-            'Freelance': '#9B59B6',
-            'Hediye': '#F39C12'
-        };
-
-        // Load transactions
-        async function loadTransactions() {
-            const response = await fetch('/api/transactions');
-            transactions = await response.json();
-            updateUI();
+        if (editingId) {
+          await fetch(`/api/transactions/${editingId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          });
+        } else {
+          await fetch("/api/transactions", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          });
         }
 
-        // Add/Update transaction
-        async function saveTransaction() {
-            const amount = document.getElementById('input-amount').value;
-            const category = document.getElementById('input-category').value;
-            const description = document.getElementById('input-description').value;
-            const date = document.getElementById('input-date').value;
+        closeModal();
+        loadTransactions();
+      }
 
-            if (!amount || !category) {
-                alert('Lütfen tüm alanları doldurun');
-                return;
-            }
+      // Delete transaction
+      async function deleteTransaction(id) {
+        if (confirm("Bu işlemi silmek istediğinizden emin misiniz?")) {
+          await fetch(`/api/transactions/${id}`, { method: "DELETE" });
+          loadTransactions();
+        }
+      }
 
-            const data = {
-                type: currentType,
-                amount: parseFloat(amount),
-                category,
-                description,
-                date
-            };
+      // Edit transaction
+      function editTransaction(id) {
+        const transaction = transactions.find((t) => t.id === id);
+        if (!transaction) return;
 
-            if (editingId) {
-                await fetch(`/api/transactions/${editingId}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-            } else {
-                await fetch('/api/transactions', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-            }
+        editingId = id;
+        currentType = transaction.type;
 
-            closeModal();
-            loadTransactions();
+        document.getElementById("modal-title").textContent = "İşlemi Düzenle";
+        document.getElementById("save-btn-text").textContent = "Güncelle";
+        document.getElementById("input-amount").value = transaction.amount;
+        document.getElementById("input-description").value =
+          transaction.description;
+        document.getElementById("input-date").value = transaction.date;
+
+        selectType(transaction.type);
+        document.getElementById("input-category").value = transaction.category;
+
+        document.getElementById("modal").classList.remove("hidden");
+      }
+
+      // UI Functions
+      function showAddModal() {
+        editingId = null;
+        currentType = "expense";
+        document.getElementById("modal-title").textContent = "Yeni İşlem Ekle";
+        document.getElementById("save-btn-text").textContent = "Kaydet";
+        document.getElementById("input-amount").value = "";
+        document.getElementById("input-category").value = "";
+        document.getElementById("input-description").value = "";
+        document.getElementById("input-date").value = new Date()
+          .toISOString()
+          .split("T")[0];
+        selectType("expense");
+        document.getElementById("modal").classList.remove("hidden");
+      }
+
+      function closeModal() {
+        document.getElementById("modal").classList.add("hidden");
+        editingId = null;
+      }
+
+      function selectType(type) {
+        currentType = type;
+        const incomeBtn = document.getElementById("btn-income");
+        const expenseBtn = document.getElementById("btn-expense");
+        const categorySelect = document.getElementById("input-category");
+
+        if (type === "income") {
+          incomeBtn.className =
+            "py-3 rounded-lg font-medium transition-all bg-green-500 text-white shadow-md";
+          expenseBtn.className =
+            "py-3 rounded-lg font-medium transition-all bg-gray-100 text-gray-600 hover:bg-gray-200";
+        } else {
+          expenseBtn.className =
+            "py-3 rounded-lg font-medium transition-all bg-red-500 text-white shadow-md";
+          incomeBtn.className =
+            "py-3 rounded-lg font-medium transition-all bg-gray-100 text-gray-600 hover:bg-gray-200";
         }
 
-        // Delete transaction
-        async function deleteTransaction(id) {
-            if (confirm('Bu işlemi silmek istediğinizden emin misiniz?')) {
-                await fetch(`/api/transactions/${id}`, { method: 'DELETE' });
-                loadTransactions();
-            }
+        categorySelect.innerHTML = '<option value="">Kategori Seçin</option>';
+        categories[type].forEach((cat) => {
+          categorySelect.innerHTML += `<option value="${cat}">${cat}</option>`;
+        });
+      }
+
+      function getFilteredTransactions() {
+        const filterType = document.getElementById("filter-type").value;
+        const filterPeriod = document.getElementById("filter-period").value;
+
+        let filtered = transactions;
+
+        if (filterType !== "all") {
+          filtered = filtered.filter((t) => t.type === filterType);
         }
 
-        // Edit transaction
-        function editTransaction(id) {
-            const transaction = transactions.find(t => t.id === id);
-            if (!transaction) return;
+        if (filterPeriod !== "all") {
+          const now = new Date();
+          const periodStart = new Date();
 
-            editingId = id;
-            currentType = transaction.type;
-            
-            document.getElementById('modal-title').textContent = 'İşlemi Düzenle';
-            document.getElementById('save-btn-text').textContent = 'Güncelle';
-            document.getElementById('input-amount').value = transaction.amount;
-            document.getElementById('input-description').value = transaction.description;
-            document.getElementById('input-date').value = transaction.date;
-            
-            selectType(transaction.type);
-            document.getElementById('input-category').value = transaction.category;
-            
-            document.getElementById('modal').classList.remove('hidden');
+          switch (filterPeriod) {
+            case "today":
+              periodStart.setHours(0, 0, 0, 0);
+              break;
+            case "week":
+              periodStart.setDate(now.getDate() - 7);
+              break;
+            case "month":
+              periodStart.setMonth(now.getMonth() - 1);
+              break;
+            case "year":
+              periodStart.setFullYear(now.getFullYear() - 1);
+              break;
+          }
+
+          filtered = filtered.filter((t) => new Date(t.date) >= periodStart);
         }
 
-        // UI Functions
-        function showAddModal() {
-            editingId = null;
-            currentType = 'expense';
-            document.getElementById('modal-title').textContent = 'Yeni İşlem Ekle';
-            document.getElementById('save-btn-text').textContent = 'Kaydet';
-            document.getElementById('input-amount').value = '';
-            document.getElementById('input-category').value = '';
-            document.getElementById('input-description').value = '';
-            document.getElementById('input-date').value = new Date().toISOString().split('T')[0];
-            selectType('expense');
-            document.getElementById('modal').classList.remove('hidden');
-        }
+        return filtered;
+      }
 
-        function closeModal() {
-            document.getElementById('modal').classList.add('hidden');
-            editingId = null;
-        }
+      function updateUI() {
+        const filtered = getFilteredTransactions();
 
-        function selectType(type) {
-            currentType = type;
-            const incomeBtn = document.getElementById('btn-income');
-            const expenseBtn = document.getElementById('btn-expense');
-            const categorySelect = document.getElementById('input-category');
+        // Update stats
+        const totalIncome = filtered
+          .filter((t) => t.type === "income")
+          .reduce((sum, t) => sum + t.amount, 0);
+        const totalExpense = filtered
+          .filter((t) => t.type === "expense")
+          .reduce((sum, t) => sum + t.amount, 0);
+        const balance = totalIncome - totalExpense;
 
-            if (type === 'income') {
-                incomeBtn.className = 'py-3 rounded-lg font-medium transition-all bg-green-500 text-white shadow-md';
-                expenseBtn.className = 'py-3 rounded-lg font-medium transition-all bg-gray-100 text-gray-600 hover:bg-gray-200';
-            } else {
-                expenseBtn.className = 'py-3 rounded-lg font-medium transition-all bg-red-500 text-white shadow-md';
-                incomeBtn.className = 'py-3 rounded-lg font-medium transition-all bg-gray-100 text-gray-600 hover:bg-gray-200';
-            }
+        document.getElementById(
+          "total-income"
+        ).textContent = `₺${totalIncome.toLocaleString("tr-TR", {
+          minimumFractionDigits: 2,
+        })}`;
+        document.getElementById(
+          "total-expense"
+        ).textContent = `₺${totalExpense.toLocaleString("tr-TR", {
+          minimumFractionDigits: 2,
+        })}`;
+        document.getElementById(
+          "balance"
+        ).textContent = `₺${balance.toLocaleString("tr-TR", {
+          minimumFractionDigits: 2,
+        })}`;
+        document.getElementById("balance").className = `text-3xl font-bold ${
+          balance >= 0 ? "text-blue-600" : "text-red-600"
+        }`;
 
-            categorySelect.innerHTML = '<option value="">Kategori Seçin</option>';
-            categories[type].forEach(cat => {
-                categorySelect.innerHTML += `<option value="${cat}">${cat}</option>`;
-            });
-        }
-
-        function getFilteredTransactions() {
-            const filterType = document.getElementById('filter-type').value;
-            const filterPeriod = document.getElementById('filter-period').value;
-            
-            let filtered = transactions;
-
-            if (filterType !== 'all') {
-                filtered = filtered.filter(t => t.type === filterType);
-            }
-
-            if (filterPeriod !== 'all') {
-                const now = new Date();
-                const periodStart = new Date();
-
-                switch (filterPeriod) {
-                    case 'today':
-                        periodStart.setHours(0, 0, 0, 0);
-                        break;
-                    case 'week':
-                        periodStart.setDate(now.getDate() - 7);
-                        break;
-                    case 'month':
-                        periodStart.setMonth(now.getMonth() - 1);
-                        break;
-                    case 'year':
-                        periodStart.setFullYear(now.getFullYear() - 1);
-                        break;
-                }
-
-                filtered = filtered.filter(t => new Date(t.date) >= periodStart);
-            }
-
-            return filtered;
-        }
-
-        function updateUI() {
-            const filtered = getFilteredTransactions();
-
-            // Update stats
-            const totalIncome = filtered.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
-            const totalExpense = filtered.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
-            const balance = totalIncome - totalExpense;
-
-            document.getElementById('total-income').textContent = `₺${totalIncome.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}`;
-            document.getElementById('total-expense').textContent = `₺${totalExpense.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}`;
-            document.getElementById('balance').textContent = `₺${balance.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}`;
-            document.getElementById('balance').className = `text-3xl font-bold ${balance >= 0 ? 'text-blue-600' : 'text-red-600'}`;
-
-            // Update transactions list
-            const listContainer = document.getElementById('transactions-list');
-            if (filtered.length === 0) {
-                listContainer.innerHTML = `
+        // Update transactions list
+        const listContainer = document.getElementById("transactions-list");
+        if (filtered.length === 0) {
+          listContainer.innerHTML = `
                     <div class="text-center py-12 text-gray-400">
                         <p class="text-5xl mb-3">📋</p>
                         <p>Henüz işlem yok. Yeni bir işlem ekleyerek başlayın!</p>
                     </div>
                 `;
-            } else {
-                listContainer.innerHTML = filtered.map(t => `
+        } else {
+          listContainer.innerHTML = filtered
+            .map(
+              (t) => `
                     <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
                         <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background-color: ${categoryColors[t.category]}20;">
-                                <span class="text-2xl">${t.type === 'income' ? '💰' : '💸'}</span>
+                            <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background-color: ${
+                              categoryColors[t.category]
+                            }20;">
+                                <span class="text-2xl">${
+                                  t.type === "income" ? "💰" : "💸"
+                                }</span>
                             </div>
                             <div>
-                                <p class="font-semibold text-gray-800">${t.category}</p>
-                                <p class="text-sm text-gray-500">${t.description}</p>
-                                <p class="text-xs text-gray-400">${new Date(t.date).toLocaleDateString('tr-TR')}</p>
+                                <p class="font-semibold text-gray-800">${
+                                  t.category
+                                }</p>
+                                <p class="text-sm text-gray-500">${
+                                  t.description
+                                }</p>
+                                <p class="text-xs text-gray-400">${new Date(
+                                  t.date
+                                ).toLocaleDateString("tr-TR")}</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-3">
-                            <p class="text-xl font-bold ${t.type === 'income' ? 'text-green-600' : 'text-red-600'}">
-                                ${t.type === 'income' ? '+' : '-'}₺${t.amount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}
+                            <p class="text-xl font-bold ${
+                              t.type === "income"
+                                ? "text-green-600"
+                                : "text-red-600"
+                            }">
+                                ${
+                                  t.type === "income" ? "+" : "-"
+                                }₺${t.amount.toLocaleString("tr-TR", {
+                minimumFractionDigits: 2,
+              })}
                             </p>
-                            <button onclick="editTransaction(${t.id})" class="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors">
+                            <button onclick="editTransaction(${
+                              t.id
+                            })" class="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors">
                                 ✏️
                             </button>
-                            <button onclick="deleteTransaction(${t.id})" class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                            <button onclick="deleteTransaction(${
+                              t.id
+                            })" class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
                                 🗑️
                             </button>
                         </div>
                     </div>
-                `).join('');
-            }
-
-            updateCharts(filtered);
+                `
+            )
+            .join("");
         }
 
-        function updateCharts(filtered) {
-            // Pie Chart Data
-            const categoryData = filtered.filter(t => t.type === 'expense').reduce((acc, t) => {
-                acc[t.category] = (acc[t.category] || 0) + t.amount;
-                return acc;
-            }, {});
+        updateCharts(filtered);
+      }
 
-            const pieData = Object.entries(categoryData);
+      function exportCSV() {
+        window.location.href = "/api/transactions/export/csv";
+      }
 
-            if (pieChart) pieChart.destroy();
-            
-            if (pieData.length > 0) {
-                const ctx = document.getElementById('pieChart').getContext('2d');
-                pieChart = new Chart(ctx, {
-                    type: 'pie',
-                    data: {
-                        labels: pieData.map(([name]) => name),
-                        datasets: [{
-                            data: pieData.map(([, value]) => value),
-                            backgroundColor: pieData.map(([name]) => categoryColors[name])
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { position: 'bottom' }
-                        }
-                    }
-                });
-            }
+      function updateCharts(filtered) {
+        // Pie Chart Data
+        const categoryData = filtered
+          .filter((t) => t.type === "expense")
+          .reduce((acc, t) => {
+            acc[t.category] = (acc[t.category] || 0) + t.amount;
+            return acc;
+          }, {});
 
-            // Bar Chart Data
-            const monthlyData = filtered.reduce((acc, t) => {
-                const month = new Date(t.date).toLocaleDateString('tr-TR', { month: 'short', year: 'numeric' });
-                if (!acc[month]) {
-                    acc[month] = { month, income: 0, expense: 0 };
-                }
-                if (t.type === 'income') {
-                    acc[month].income += t.amount;
-                } else {
-                    acc[month].expense += t.amount;
-                }
-                return acc;
-            }, {});
+        const pieData = Object.entries(categoryData);
 
-            const barData = Object.values(monthlyData).reverse().slice(0, 6).reverse();
+        if (pieChart) pieChart.destroy();
 
-            if (barChart) barChart.destroy();
-
-            if (barData.length > 0) {
-                const ctx = document.getElementById('barChart').getContext('2d');
-                barChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: barData.map(d => d.month),
-                        datasets: [
-                            {
-                                label: 'Gelir',
-                                data: barData.map(d => d.income),
-                                backgroundColor: '#6BCF7F'
-                            },
-                            {
-                                label: 'Gider',
-                                data: barData.map(d => d.expense),
-                                backgroundColor: '#FF6B6B'
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { position: 'bottom' }
-                        }
-                    }
-                });
-            }
+        if (pieData.length > 0) {
+          const ctx = document.getElementById("pieChart").getContext("2d");
+          pieChart = new Chart(ctx, {
+            type: "pie",
+            data: {
+              labels: pieData.map(([name]) => name),
+              datasets: [
+                {
+                  data: pieData.map(([, value]) => value),
+                  backgroundColor: pieData.map(
+                    ([name]) => categoryColors[name]
+                  ),
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { position: "bottom" },
+              },
+            },
+          });
         }
 
-        // Event listeners
-        document.getElementById('filter-type').addEventListener('change', updateUI);
-        document.getElementById('filter-period').addEventListener('change', updateUI);
+        // Bar Chart Data
+        const monthlyData = filtered.reduce((acc, t) => {
+          const month = new Date(t.date).toLocaleDateString("tr-TR", {
+            month: "short",
+            year: "numeric",
+          });
+          if (!acc[month]) {
+            acc[month] = { month, income: 0, expense: 0 };
+          }
+          if (t.type === "income") {
+            acc[month].income += t.amount;
+          } else {
+            acc[month].expense += t.amount;
+          }
+          return acc;
+        }, {});
 
-        // Initialize
-        document.getElementById('input-date').value = new Date().toISOString().split('T')[0];
-        loadTransactions();
+        const barData = Object.values(monthlyData)
+          .reverse()
+          .slice(0, 6)
+          .reverse();
+
+        if (barChart) barChart.destroy();
+
+        if (barData.length > 0) {
+          const ctx = document.getElementById("barChart").getContext("2d");
+          barChart = new Chart(ctx, {
+            type: "bar",
+            data: {
+              labels: barData.map((d) => d.month),
+              datasets: [
+                {
+                  label: "Gelir",
+                  data: barData.map((d) => d.income),
+                  backgroundColor: "#6BCF7F",
+                },
+                {
+                  label: "Gider",
+                  data: barData.map((d) => d.expense),
+                  backgroundColor: "#FF6B6B",
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { position: "bottom" },
+              },
+            },
+          });
+        }
+      }
+
+      // Event listeners
+      document
+        .getElementById("filter-type")
+        .addEventListener("change", updateUI);
+      document
+        .getElementById("filter-period")
+        .addEventListener("change", updateUI);
+
+      // Initialize
+      document.getElementById("input-date").value = new Date()
+        .toISOString()
+        .split("T")[0];
+      loadTransactions();
     </script>
-</body>
+  </body>
 </html>
