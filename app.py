@@ -147,5 +147,21 @@ def export_excel():
     )
 
 
+@app.route('/api/statistics')
+def statistics():
+    transactions = load_transactions()
+
+    income = [t['amount'] for t in transactions if t['type'] == 'income']
+    expense = [t['amount'] for t in transactions if t['type'] == 'expense']
+
+    return jsonify({
+        'income_count': len(income),
+        'expense_count': len(expense),
+        'avg_income': sum(income) / len(income) if income else 0,
+        'avg_expense': sum(expense) / len(expense) if expense else 0,
+        'max_expense': max(expense) if expense else 0
+    })
+
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

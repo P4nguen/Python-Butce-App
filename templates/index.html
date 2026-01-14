@@ -35,7 +35,7 @@
         <p class="text-gray-600">Python Flask ile Bütçe Takibi</p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div
           class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-green-500 transform hover:scale-105 transition-transform"
         >
@@ -75,6 +75,19 @@
             <span class="text-5xl">💰</span>
           </div>
         </div>
+        <div
+          class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-orange-500 transform hover:scale-105 transition-transform"
+        >
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-gray-500 text-sm mb-1">Bugünkü Harcama</p>
+              <p id="today-expense" class="text-3xl font-bold text-orange-600">
+                ₺0.00
+              </p>
+            </div>
+            <span class="text-5xl">🔥</span>
+          </div>
+        </div>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
@@ -90,6 +103,19 @@
           <div class="relative h-64 w-full">
             <canvas id="barChart"></canvas>
           </div>
+        </div>
+      </div>
+
+      <!-- İSTATİSTİKLER -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div class="bg-white rounded-xl p-4">
+          <p class="text-sm text-gray-500">Ortalama Gider</p>
+          <p id="avg-expense" class="text-xl font-bold text-purple-700"></p>
+        </div>
+
+        <div class="bg-white rounded-xl p-4">
+          <p class="text-sm text-gray-500">En Yüksek Gider</p>
+          <p id="max-expense" class="text-xl font-bold text-red-600"></p>
         </div>
       </div>
 
@@ -116,20 +142,18 @@
               <option value="year">Son Yıl</option>
             </select>
           </div>
-
+          <button
+            onclick="window.location.href='/api/transactions/export/excel'"
+            class="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-5 py-2 rounded-lg shadow-md"
+          >
+            📊 Excel Raporu
+          </button>
           <button
             onclick="showAddModal()"
             class="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2 rounded-lg flex items-center gap-2 hover:from-purple-600 hover:to-pink-600 transition-all shadow-md"
           >
             <span class="text-xl">➕</span>
             Yeni İşlem
-          </button>
-
-          <button
-            onclick="window.location.href='/api/transactions/export/excel'"
-            class="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-5 py-2 rounded-lg shadow-md"
-          >
-            📊 Excel Raporu
           </button>
         </div>
       </div>
@@ -280,6 +304,17 @@
         const response = await fetch("/api/transactions");
         transactions = await response.json();
         updateUI();
+      }
+
+      function todayExpense() {
+        const today = new Date().toISOString().split("T")[0];
+        const total = transactions
+          .filter((t) => t.type === "expense" && t.date === today)
+          .reduce((s, t) => s + t.amount, 0);
+
+        document.getElementById(
+          "today-expense"
+        ).textContent = `₺${total.toFixed(2)}`;
       }
 
       // Add/Update transaction
@@ -524,7 +559,22 @@
         }
 
         updateCharts(filtered);
+        todayExpense();
       }
+      async function loadStatistics() {
+        const res = await fetch("/api/statistics");
+        const data = await res.json();
+
+        document.getElementById(
+          "avg-expense"
+        ).textContent = `Ortalama Gider: ₺${data.avg_expense.toFixed(2)}`;
+
+        document.getElementById(
+          "max-expense"
+        ).textContent = `En Yüksek Gider: ₺${data.max_expense.toFixed(2)}`;
+      }
+
+      loadStatistics();
 
       function exportCSV() {
         window.location.href = "/api/transactions/export/csv";
